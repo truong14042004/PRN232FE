@@ -168,7 +168,7 @@ export default function App() {
         <Route
           path="/my-sessions"
           element={
-            <ProtectedRoute roles={['Admin', 'FacilityManager', 'ParkingStaff', 'Driver']}>
+            <ProtectedRoute roles={['Driver']}>
               <MySessionsPage />
             </ProtectedRoute>
           }
@@ -176,7 +176,7 @@ export default function App() {
         <Route
           path="/my-vehicles"
           element={
-            <ProtectedRoute roles={['Admin', 'FacilityManager', 'ParkingStaff', 'Driver']}>
+            <ProtectedRoute roles={['Driver']}>
               <MyVehiclesPage />
             </ProtectedRoute>
           }
@@ -184,7 +184,7 @@ export default function App() {
         <Route
           path="/lot-info"
           element={
-            <ProtectedRoute roles={['Admin', 'FacilityManager', 'ParkingStaff', 'Driver']}>
+            <ProtectedRoute roles={['Driver']}>
               <LotInfoPage />
             </ProtectedRoute>
           }
@@ -192,7 +192,7 @@ export default function App() {
         <Route
           path="/feedback"
           element={
-            <ProtectedRoute roles={['Admin', 'FacilityManager', 'ParkingStaff', 'Driver']}>
+            <ProtectedRoute roles={['Driver']}>
               <FeedbackPage />
             </ProtectedRoute>
           }

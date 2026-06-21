@@ -30,6 +30,7 @@ import { useAuth } from '../../context/AuthContext'
 const ALL = ['Admin', 'FacilityManager', 'ParkingStaff', 'Driver']
 const STAFF = ['Admin', 'FacilityManager', 'ParkingStaff']
 const MANAGER = ['Admin', 'FacilityManager']
+const DRIVER = ['Driver']
 
 const NAV_GROUPS = [
   {
@@ -40,10 +41,10 @@ const NAV_GROUPS = [
   {
     title: 'Cá nhân',
     items: [
-      { to: '/my-sessions', label: 'Lượt gửi của tôi', icon: Ticket, roles: ALL },
-      { to: '/my-vehicles', label: 'Xe của tôi', icon: Car, roles: ALL },
-      { to: '/lot-info', label: 'Thông tin bãi', icon: Info, roles: ALL },
-      { to: '/feedback', label: 'Phản hồi', icon: MessageSquare, roles: ALL },
+      { to: '/my-sessions', label: 'Lượt gửi của tôi', icon: Ticket, roles: DRIVER },
+      { to: '/my-vehicles', label: 'Xe của tôi', icon: Car, roles: DRIVER },
+      { to: '/lot-info', label: 'Thông tin bãi', icon: Info, roles: DRIVER },
+      { to: '/feedback', label: 'Phản hồi', icon: MessageSquare, roles: DRIVER },
     ],
   },
   {
