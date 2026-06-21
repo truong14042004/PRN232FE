@@ -22,10 +22,13 @@ import ParkingSessionsPage from './pages/sessions/ParkingSessionsPage'
 import ParkingSlotsPage from './pages/parking-slots/ParkingSlotsPage'
 import ParkingMapPage from './pages/parking-map/ParkingMapPage'
 import MySessionsPage from './pages/driver/MySessionsPage'
+import MyPaymentsPage from './pages/driver/MyPaymentsPage'
 import MyVehiclesPage from './pages/driver/MyVehiclesPage'
 import LotInfoPage from './pages/driver/LotInfoPage'
 import FeedbackPage from './pages/driver/FeedbackPage'
 import FeedbackManagementPage from './pages/feedback/FeedbackManagementPage'
+import IncidentsPage from './pages/incidents/IncidentsPage'
+import RolesPage from './pages/roles/RolesPage'
 import ForbiddenPage from './pages/ForbiddenPage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -174,6 +177,14 @@ export default function App() {
           }
         />
         <Route
+          path="/my-payments"
+          element={
+            <ProtectedRoute roles={['Driver']}>
+              <MyPaymentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/my-vehicles"
           element={
             <ProtectedRoute roles={['Driver']}>
@@ -210,6 +221,22 @@ export default function App() {
           element={
             <ProtectedRoute roles={['Admin', 'FacilityManager', 'ParkingStaff']}>
               <FeedbackManagementPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/incidents"
+          element={
+            <ProtectedRoute roles={['Admin', 'FacilityManager', 'ParkingStaff']}>
+              <IncidentsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/roles"
+          element={
+            <ProtectedRoute roles={['Admin']}>
+              <RolesPage />
             </ProtectedRoute>
           }
         />

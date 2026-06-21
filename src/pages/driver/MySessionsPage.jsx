@@ -1,9 +1,7 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
-import { Ticket, CreditCard, ExternalLink } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
+import { Ticket, CreditCard } from 'lucide-react'
 import { parkingSessionService } from '../../services/parkingSessionService'
-import { paymentService } from '../../services/paymentService'
-import { getErrorMessage } from '../../lib/apiClient'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Card, CardBody } from '../../components/ui/Card'
 import { Table } from '../../components/ui/Table'
@@ -19,64 +17,28 @@ export default function MySessionsPage() {
     queryFn: () => parkingSessionService.my({ pageSize: 100 }),
   })
 
-  // Lấy payment cho phiên đã hoàn tất → tạo link PayOS → mở trang thanh toán.
-  const payMutation = useMutation({
-    mutationFn: async (session) => {
-      const payments = await paymentService.bySession(session.id)
-      const pending = (payments || []).find((p) => p.status === 1 || p.status === 2)
-      let paymentId = pending?.id
-      // Chưa có payment → tạo mới theo phí của phiên.
-      if (!paymentId) {
-        const created = await paymentService.create({
-          parkingSessionId: session.id,
-          plateNumber: session.plateNumber,
-          amount: session.totalFee || 0,
-          method: 2, // chuyển khoản / PayOS
-        })
-        paymentId = created.id
-      }
-      const link = await paymentService.payosLink(paymentId)
-      return link
-    },
-    onSuccess: (link) => {
-      if (link?.checkoutUrl) {
-        window.open(link.checkoutUrl, '_blank')
-        toast.success('Đã mở trang thanh toán PayOS')
-      } else {
-        toast.error('Không lấy được link thanh toán')
-      }
-    },
-    onError: (err) => toast.error(getErrorMessage(err, 'Tạo thanh toán thất bại')),
-  })
-
   const columns = [
     { key: 'plateNumber', header: 'Biển số', render: (r) => <span className="font-semibold text-slate-800">{r.plateNumber}</span> },
     { key: 'checkInTime', header: 'Giờ vào', render: (r) => formatDateTime(r.checkInTime) },
     { key: 'checkOutTime', header: 'Giờ ra', render: (r) => (r.checkOutTime ? formatDateTime(r.checkOutTime) : '—') },
-    { key: 'totalFee', header: 'Phí', render: (r) => (r.totalFee ? formatCurrency(r.totalFee) : '—') },
+    {
+      key: 'totalFee',
+      header: 'Phí',
+      render: (r) =>
+        r.totalFee ? (
+          formatCurrency(r.totalFee)
+        ) : r.status === 1 && !r.isMonthly ? (
+          <EstimatedFeeCell session={r} />
+        ) : r.isMonthly ? (
+          <span className="text-violet-600">Vé tháng</span>
+        ) : (
+          '—'
+        ),
+    },
     {
       key: 'status',
       header: 'Trạng thái',
       render: (r) => <Badge color={SESSION_STATUS[r.status]?.color}>{SESSION_STATUS[r.status]?.label || r.status}</Badge>,
-    },
-    {
-      key: 'actions',
-      header: '',
-      align: 'right',
-      render: (r) =>
-        // Phiên hoàn tất + có phí → cho thanh toán.
-        r.status === 2 && r.totalFee > 0 ? (
-          <Button
-            variant="secondary"
-            className="h-8 px-2.5 text-xs"
-            loading={payMutation.isPending}
-            onClick={() => payMutation.mutate(r)}
-          >
-            <CreditCard className="h-3.5 w-3.5" />
-            Thanh toán
-            <ExternalLink className="h-3 w-3" />
-          </Button>
-        ) : null,
     },
   ]
 
@@ -86,8 +48,16 @@ export default function MySessionsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Lượt gửi của tôi"
-        description="Theo dõi các lượt gửi xe theo biển số đã đăng ký và thanh toán phí."
+        description="Theo dõi các lượt gửi xe theo biển số đã đăng ký."
         icon={Ticket}
+        actions={
+          <Link to="/my-payments">
+            <Button variant="secondary">
+              <CreditCard className="h-4 w-4" />
+              Thanh toán phí
+            </Button>
+          </Link>
+        }
       />
 
       <Card>
@@ -104,5 +74,23 @@ export default function MySessionsPage() {
         </CardBody>
       </Card>
     </div>
+  )
+}
+
+// Phí tạm tính cho phiên đang gửi (Active): dùng endpoint chuyên dụng của BE
+// (tính phí tới hiện tại + kiểm tra quyền sở hữu phiên cho Driver).
+function EstimatedFeeCell({ session }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['estimated-fee', session.id],
+    queryFn: () => parkingSessionService.estimateFee(session.id),
+    staleTime: 60 * 1000,
+  })
+
+  if (isLoading) return <span className="text-slate-400">Đang tính...</span>
+  if (data?.estimatedFee == null) return <span className="text-slate-400">—</span>
+  return (
+    <span className="text-amber-600" title="Phí tạm tính tới hiện tại">
+      ~{formatCurrency(data.estimatedFee)}
+    </span>
   )
 }

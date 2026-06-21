@@ -32,8 +32,11 @@ import ReservationFormModal from './ReservationFormModal'
 
 export default function ReservationsPage() {
   const queryClient = useQueryClient()
-  const { hasRole } = useAuth()
+  const { hasRole, user } = useAuth()
   const canManage = hasRole('Admin', 'FacilityManager', 'ParkingStaff')
+  const isDriver = hasRole('Driver')
+  // Driver tự đặt chỗ được (BE cho phép), nhưng không quản lý xác nhận/hủy của người khác.
+  const canCreate = canManage || hasRole('Driver')
   const { options: buildingOptions } = useBuildingOptions()
 
   const [page, setPage] = useState(1)
@@ -153,10 +156,30 @@ export default function ReservationsPage() {
       header: '',
       align: 'right',
       render: (r) => {
-        if (!canManage) return null
         const isPending = r.status === 1 // Pending
         const isConfirmed = r.status === 2 // Confirmed
         const canEdit = isPending || isConfirmed
+
+        // Driver chỉ được tự hủy đặt chỗ của chính mình (Pending/Confirmed).
+        // BE đã enforce ownership (trả 403 nếu hủy của người khác), nhưng vẫn
+        // lọc theo user.id nếu xác định được để chỉ hiện nút Hủy đúng của mình.
+        if (!canManage) {
+          if (!isDriver || !canEdit) return null
+          const isOwn = !user?.id || !r.driverUserId || r.driverUserId === user.id
+          if (!isOwn) return null
+          return (
+            <div className="flex items-center justify-end gap-1">
+              <button
+                onClick={() => setConfirmAction({ type: 'cancel', reservation: r })}
+                className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50"
+                title="Hủy"
+              >
+                <XCircle className="h-4 w-4" />
+              </button>
+            </div>
+          )
+        }
+
         return (
           <div className="flex items-center justify-end gap-1">
             {canEdit && (
@@ -208,7 +231,7 @@ export default function ReservationsPage() {
         description="Quản lý yêu cầu giữ chỗ trước của khách hàng."
         icon={CalendarCheck}
         actions={
-          canManage && (
+          canCreate && (
             <Button onClick={() => setFormState({ mode: 'create' })}>
               <Plus className="h-4 w-4" />
               Tạo đặt chỗ
@@ -291,6 +314,7 @@ export default function ReservationsPage() {
         open={!!formState}
         mode={formState?.mode}
         reservation={formState?.reservation}
+        hideZone={!canManage}
         onClose={() => setFormState(null)}
         onSaved={invalidate}
       />
