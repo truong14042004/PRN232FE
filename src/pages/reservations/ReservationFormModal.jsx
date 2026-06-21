@@ -34,7 +34,7 @@ const emptyValues = () => ({
   note: '',
 })
 
-export default function ReservationFormModal({ open, mode = 'create', reservation, onClose, onSaved }) {
+export default function ReservationFormModal({ open, mode = 'create', reservation, hideZone = false, onClose, onSaved }) {
   const isEdit = mode === 'edit'
   const {
     register,
@@ -48,7 +48,7 @@ export default function ReservationFormModal({ open, mode = 'create', reservatio
   const buildingId = watch('buildingId')
   const { options: buildingOptions } = useBuildingOptions()
   const { options: vehicleTypeOptions } = useVehicleTypeOptions()
-  const { options: zoneOptions } = useZoneOptions(buildingId)
+  const { options: zoneOptions } = useZoneOptions(buildingId, undefined, !hideZone)
 
   useEffect(() => {
     if (!open) return
@@ -162,13 +162,15 @@ export default function ReservationFormModal({ open, mode = 'create', reservatio
               validate: (v) => isEdit || !!v.trim() || 'Vui lòng nhập biển số',
             })}
           />
-          <Select
-            label="Khu vực (tùy chọn)"
-            placeholder={buildingId ? 'Chọn khu vực' : 'Chọn tòa nhà trước'}
-            options={zoneOptions}
-            disabled={!buildingId}
-            {...register('zoneId')}
-          />
+          {!hideZone && (
+            <Select
+              label="Khu vực (tùy chọn)"
+              placeholder={buildingId ? 'Chọn khu vực' : 'Chọn tòa nhà trước'}
+              options={zoneOptions}
+              disabled={!buildingId}
+              {...register('zoneId')}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

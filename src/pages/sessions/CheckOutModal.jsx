@@ -83,8 +83,12 @@ export default function CheckOutModal({ open, session, onClose, onSaved, default
         checkOutNote: finalNote || undefined,
       })
     },
-    onSuccess: () => {
-      toast.success(lostTicket ? 'Đã xử lý mất thẻ và cho xe ra' : 'Đã cho xe ra bãi')
+    onSuccess: (data) => {
+      // BE trả về phiên đã hoàn tất với phí chính thức → báo số tiền thực thu.
+      const fee = data?.totalFee != null ? ` · thu ${formatCurrency(data.totalFee)}` : ''
+      toast.success(
+        (lostTicket ? 'Đã xử lý mất thẻ và cho xe ra' : 'Đã cho xe ra bãi') + fee,
+      )
       onSaved?.()
       onClose?.()
     },

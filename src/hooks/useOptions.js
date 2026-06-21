@@ -43,11 +43,11 @@ export function useFloorOptions(buildingId) {
 }
 
 // Khu vực theo tòa nhà (+ tầng nếu có).
-export function useZoneOptions(buildingId, floorId) {
+export function useZoneOptions(buildingId, floorId, enabled = true) {
   const { data, isLoading } = useQuery({
     queryKey: ['zones', 'options', buildingId, floorId],
     queryFn: () => zoneService.list({ buildingId, floorId, isActive: true, pageSize: 200 }),
-    enabled: !!buildingId,
+    enabled: enabled && !!buildingId,
     staleTime: 5 * 60 * 1000,
   })
   const options = (data?.items || []).map((z) => ({ value: z.id, label: z.name }))

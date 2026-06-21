@@ -22,6 +22,9 @@ import {
   Ticket,
   Info,
   MessageSquare,
+  Wallet,
+  AlertOctagon,
+  Shield,
 } from 'lucide-react'
 import { cn } from '../../lib/cn'
 import { useAuth } from '../../context/AuthContext'
@@ -42,6 +45,7 @@ const NAV_GROUPS = [
     title: 'Cá nhân',
     items: [
       { to: '/my-sessions', label: 'Lượt gửi của tôi', icon: Ticket, roles: DRIVER },
+      { to: '/my-payments', label: 'Thanh toán của tôi', icon: Wallet, roles: DRIVER },
       { to: '/my-vehicles', label: 'Xe của tôi', icon: Car, roles: DRIVER },
       { to: '/lot-info', label: 'Thông tin bãi', icon: Info, roles: DRIVER },
       { to: '/feedback', label: 'Phản hồi', icon: MessageSquare, roles: DRIVER },
@@ -54,6 +58,7 @@ const NAV_GROUPS = [
       { to: '/sessions', label: 'Phiên gửi xe', icon: LogIn, roles: STAFF },
       { to: '/reservations', label: 'Đặt chỗ', icon: CalendarCheck, roles: ALL },
       { to: '/payments', label: 'Thanh toán', icon: CreditCard, roles: STAFF },
+      { to: '/incidents', label: 'Sự cố', icon: AlertOctagon, roles: STAFF },
       { to: '/feedback-management', label: 'Quản lý phản hồi', icon: MessageSquare, roles: STAFF },
     ],
   },
@@ -82,6 +87,7 @@ const NAV_GROUPS = [
       { to: '/reports', label: 'Báo cáo', icon: BarChart3, roles: MANAGER },
       { to: '/optimization', label: 'Tối ưu bãi xe', icon: Sparkles, roles: MANAGER },
       { to: '/users', label: 'Người dùng', icon: Users, roles: ['Admin'] },
+      { to: '/roles', label: 'Vai trò', icon: Shield, roles: ['Admin'] },
     ],
   },
 ]
