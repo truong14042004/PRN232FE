@@ -79,7 +79,7 @@ export default function CheckOutModal({ open, session, onClose, onSaved, default
       }
       return parkingSessionService.checkOut(session.id, {
         exitGate: exitGate || undefined,
-        totalFee: Number(totalFee) || 0,
+        isLostTicket: lostTicket,
         checkOutNote: finalNote || undefined,
       })
     },
@@ -166,10 +166,10 @@ export default function CheckOutModal({ open, session, onClose, onSaved, default
           <div className="flex items-end gap-2">
             <Input
               type="number"
-              label="Phí gửi xe (VNĐ)"
+              label="Phí dự kiến (VNĐ)"
               placeholder="0"
               value={totalFee}
-              onChange={(e) => setTotalFee(e.target.value)}
+              readOnly
               containerClassName="flex-1"
             />
             <Button
