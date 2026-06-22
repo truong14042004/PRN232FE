@@ -22,6 +22,7 @@ const emptyValues = () => ({
   monthlyPrice: '',
   lostTicketFee: '',
   overtimeFee: '',
+  overtimeAfterHours: 24,
   effectiveFrom: toDateInput(new Date()),
   effectiveTo: '',
 })
@@ -49,6 +50,7 @@ export default function FeePolicyFormModal({ open, mode = 'create', policy, onCl
         monthlyPrice: policy.monthlyPrice ?? '',
         lostTicketFee: policy.lostTicketFee ?? '',
         overtimeFee: policy.overtimeFee ?? '',
+        overtimeAfterHours: policy.overtimeAfterHours ?? 24,
         effectiveFrom: toDateInput(policy.effectiveFrom),
         effectiveTo: policy.effectiveTo ? toDateInput(policy.effectiveTo) : '',
       })
@@ -81,6 +83,7 @@ export default function FeePolicyFormModal({ open, mode = 'create', policy, onCl
       monthlyPrice: optNum(values.monthlyPrice),
       lostTicketFee: Number(values.lostTicketFee || 0),
       overtimeFee: Number(values.overtimeFee || 0),
+      overtimeAfterHours: optNum(values.overtimeAfterHours),
       effectiveFrom: values.effectiveFrom
         ? new Date(values.effectiveFrom).toISOString()
         : undefined,
@@ -168,7 +171,7 @@ export default function FeePolicyFormModal({ open, mode = 'create', policy, onCl
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
           <Input
             type="number"
             label="Phí mất vé"
@@ -180,6 +183,13 @@ export default function FeePolicyFormModal({ open, mode = 'create', policy, onCl
             label="Phí quá giờ"
             placeholder="0"
             {...register('overtimeFee')}
+          />
+          <Input
+            type="number"
+            label="Quá giờ sau (giờ)"
+            placeholder="24"
+            hint="Gửi quá số giờ này mới tính phí quá giờ"
+            {...register('overtimeAfterHours')}
           />
         </div>
 

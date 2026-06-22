@@ -18,6 +18,7 @@ const emptyValues = () => ({
   title: '',
   description: '',
   plateNumber: '',
+  occupyingPlateNumber: '',
   parkingSessionId: '',
   parkingSlotId: '',
   vehicleId: '',
@@ -44,6 +45,7 @@ export default function IncidentFormModal({ open, mode = 'create', incident, onC
         title: incident.title || '',
         description: incident.description || '',
         plateNumber: incident.plateNumber || '',
+        occupyingPlateNumber: incident.occupyingPlateNumber || '',
         parkingSessionId: incident.parkingSessionId || '',
         parkingSlotId: incident.parkingSlotId || '',
         vehicleId: incident.vehicleId || '',
@@ -74,6 +76,7 @@ export default function IncidentFormModal({ open, mode = 'create', incident, onC
         type: Number(values.type),
         status: Number(values.status),
         plateNumber: values.plateNumber?.trim() || undefined,
+        occupyingPlateNumber: values.occupyingPlateNumber?.trim() || undefined,
         parkingSessionId: values.parkingSessionId?.trim() || undefined,
         parkingSlotId: values.parkingSlotId?.trim() || undefined,
         vehicleId: values.vehicleId?.trim() || undefined,
@@ -86,6 +89,7 @@ export default function IncidentFormModal({ open, mode = 'create', incident, onC
         title: values.title.trim(),
         description: values.description.trim(),
         plateNumber: values.plateNumber?.trim() || undefined,
+        occupyingPlateNumber: values.occupyingPlateNumber?.trim() || undefined,
         parkingSessionId: values.parkingSessionId?.trim() || undefined,
         parkingSlotId: values.parkingSlotId?.trim() || undefined,
         vehicleId: values.vehicleId?.trim() || undefined,
@@ -151,14 +155,20 @@ export default function IncidentFormModal({ open, mode = 'create', incident, onC
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
-            label="Biển số xe (tùy chọn)"
+            label="Biển số xe khách báo (tùy chọn)"
             placeholder="VD: 51F-123.45"
             {...register('plateNumber')}
           />
-          {isEdit && (
-            <Select label="Trạng thái" options={INCIDENT_STATUS_OPTIONS} {...register('status')} />
-          )}
+          <Input
+            label="Biển số xe vi phạm / chiếm chỗ (tùy chọn)"
+            placeholder="VD: 59X1-678.90"
+            {...register('occupyingPlateNumber')}
+          />
         </div>
+
+        {isEdit && (
+          <Select label="Trạng thái" options={INCIDENT_STATUS_OPTIONS} {...register('status')} />
+        )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Input

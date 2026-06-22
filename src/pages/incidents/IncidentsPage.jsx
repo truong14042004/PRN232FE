@@ -87,7 +87,14 @@ export default function IncidentsPage() {
       key: 'plateNumber',
       header: 'Biển số',
       render: (r) => (
-        <span className="font-semibold text-slate-900">{r.plateNumber || '—'}</span>
+        <div className="flex flex-col">
+          <span className="font-semibold text-slate-900">{r.plateNumber || '—'}</span>
+          {r.occupyingPlateNumber && (
+            <span className="text-xs text-red-600" title="Xe vi phạm / chiếm chỗ">
+              ⚠ {r.occupyingPlateNumber}
+            </span>
+          )}
+        </div>
       ),
     },
     {
