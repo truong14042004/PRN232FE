@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { CreditCard, ExternalLink, CheckCircle2, Wallet, Clock } from 'lucide-react'
@@ -73,11 +74,26 @@ function PayableRow({ session, onPaid }) {
   const paymentsQuery = useQuery({
     queryKey: ['payments', 'by-session', session.id],
     queryFn: () => paymentService.bySession(session.id),
+    // Auto-poll mỗi 3s khi có payment đang chờ — dừng khi đã thanh toán.
+    refetchInterval: (query) => {
+      const items = query.state.data || []
+      const hasPending = items.some((p) => p.status === PAY_PENDING)
+      return hasPending ? 3000 : false
+    },
   })
 
   const payments = paymentsQuery.data || []
   const paid = payments.find((p) => p.status === PAY_PAID)
   const pending = payments.find((p) => p.status === PAY_PENDING)
+
+  // Thông báo khi polling phát hiện thanh toán thành công.
+  const wasPending = usePrevious(!!pending)
+  useEffect(() => {
+    if (wasPending && paid && !pending) {
+      toast.success('Thanh toán thành công!')
+      qc.invalidateQueries({ queryKey: ['my-sessions', 'payments'] })
+    }
+  }, [wasPending, paid, pending, qc])
 
   const payMutation = useMutation({
     mutationFn: async () => {
@@ -144,4 +160,13 @@ function PayableRow({ session, onPaid }) {
       </div>
     </li>
   )
+}
+
+// Lưu giá trị previous của một biến — dùng để detect transition Pending → Paid.
+function usePrevious(value) {
+  const ref = useRef(value)
+  useEffect(() => {
+    ref.current = value
+  })
+  return ref.current
 }

@@ -22,6 +22,7 @@ import ParkingSessionsPage from './pages/sessions/ParkingSessionsPage'
 import ParkingSlotsPage from './pages/parking-slots/ParkingSlotsPage'
 import ParkingMapPage from './pages/parking-map/ParkingMapPage'
 import MySessionsPage from './pages/driver/MySessionsPage'
+import MySubscriptionsPage from './pages/driver/MySubscriptionsPage'
 import MyPaymentsPage from './pages/driver/MyPaymentsPage'
 import MyVehiclesPage from './pages/driver/MyVehiclesPage'
 import LotInfoPage from './pages/driver/LotInfoPage'
@@ -173,6 +174,14 @@ export default function App() {
           element={
             <ProtectedRoute roles={['Driver']}>
               <MySessionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-subscriptions"
+          element={
+            <ProtectedRoute roles={['Driver']}>
+              <MySubscriptionsPage />
             </ProtectedRoute>
           }
         />

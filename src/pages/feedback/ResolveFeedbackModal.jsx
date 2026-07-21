@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import {
-  Star,
   Reply,
   LogOut,
   Calculator,
@@ -144,19 +143,6 @@ const EXCEPTION_PLAYBOOK = {
   },
 }
 
-function Stars({ value }) {
-  return (
-    <span className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <Star
-          key={n}
-          className={cn('h-3.5 w-3.5', n <= value ? 'fill-amber-400 text-amber-400' : 'text-slate-300')}
-        />
-      ))}
-    </span>
-  )
-}
-
 // Tóm tắt phiên đang gửi (nhận dữ liệu đã tra ở cấp modal).
 function SessionSummary({ plate, query }) {
   const { data, isLoading, isError } = query
@@ -286,7 +272,6 @@ export default function ResolveFeedbackModal({ feedback, open, onClose, onResolv
         {/* Header phản hồi */}
         <div className="rounded-xl bg-slate-50/80 p-4">
           <div className="flex items-center justify-between">
-            <Stars value={feedback.rating} />
             <Badge color={FEEDBACK_STATUS[feedback.status]?.color}>
               {FEEDBACK_STATUS[feedback.status]?.label || feedback.status}
             </Badge>

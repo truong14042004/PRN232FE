@@ -10,6 +10,7 @@ import {
   PauseCircle,
   XCircle,
   RotateCcw,
+  CheckCircle,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { subscriptionService } from '../../services/subscriptionService'
@@ -28,6 +29,7 @@ import { useAuth } from '../../context/AuthContext'
 import { formatCurrency, formatDate } from '../../lib/format'
 import SubscriptionFormModal from './SubscriptionFormModal'
 import RenewSubscriptionModal from './RenewSubscriptionModal'
+import RejectSubscriptionDialog from './RejectSubscriptionDialog'
 
 export default function SubscriptionsPage() {
   const queryClient = useQueryClient()
@@ -39,6 +41,7 @@ export default function SubscriptionsPage() {
   const [formState, setFormState] = useState(null) // null | { mode, subscription }
   const [renewTarget, setRenewTarget] = useState(null)
   const [confirmAction, setConfirmAction] = useState(null) // { type, subscription }
+  const [rejectTarget, setRejectTarget] = useState(null)
 
   const filters = {
     status: status === '' ? undefined : Number(status),
@@ -69,6 +72,24 @@ export default function SubscriptionsPage() {
       invalidate()
     },
     onError: (err) => toast.error(getErrorMessage(err, 'Hủy thất bại')),
+  })
+
+  const approveMutation = useMutation({
+    mutationFn: (id) => subscriptionService.approve(id),
+    onSuccess: () => {
+      toast.success('Đã duyệt vé tháng')
+      invalidate()
+    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Duyệt thất bại')),
+  })
+
+  const rejectMutation = useMutation({
+    mutationFn: ({ id, reason }) => subscriptionService.reject(id, reason),
+    onSuccess: () => {
+      toast.success('Đã từ chối vé tháng')
+      invalidate()
+    },
+    onError: (err) => toast.error(getErrorMessage(err, 'Từ chối thất bại')),
   })
 
   const handleConfirm = () => {
@@ -125,38 +146,60 @@ export default function SubscriptionsPage() {
       render: (r) => {
         if (!canManage) return null
         const isActive = r.status === 1
+        const isPending = r.status === 5
         return (
           <div className="flex items-center justify-end gap-1">
-            <button
-              onClick={() => setFormState({ mode: 'edit', subscription: r })}
-              className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-              title="Sửa"
-            >
-              <Pencil className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setRenewTarget(r)}
-              className="rounded-lg p-2 text-brand-500 transition-colors hover:bg-brand-50"
-              title="Gia hạn"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </button>
-            {isActive && (
+            {isPending ? (
               <>
                 <button
-                  onClick={() => setConfirmAction({ type: 'suspend', subscription: r })}
-                  className="rounded-lg p-2 text-amber-500 transition-colors hover:bg-amber-50"
-                  title="Tạm ngưng"
+                  onClick={() => approveMutation.mutate(r.id)}
+                  className="rounded-lg p-2 text-emerald-500 transition-colors hover:bg-emerald-50"
+                  title="Duyệt"
                 >
-                  <PauseCircle className="h-4 w-4" />
+                  <CheckCircle className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => setConfirmAction({ type: 'cancel', subscription: r })}
+                  onClick={() => setRejectTarget(r)}
                   className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50"
-                  title="Hủy"
+                  title="Từ chối"
                 >
                   <XCircle className="h-4 w-4" />
                 </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => setFormState({ mode: 'edit', subscription: r })}
+                  className="rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                  title="Sửa"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setRenewTarget(r)}
+                  className="rounded-lg p-2 text-brand-500 transition-colors hover:bg-brand-50"
+                  title="Gia hạn"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </button>
+                {isActive && (
+                  <>
+                    <button
+                      onClick={() => setConfirmAction({ type: 'suspend', subscription: r })}
+                      className="rounded-lg p-2 text-amber-500 transition-colors hover:bg-amber-50"
+                      title="Tạm ngưng"
+                    >
+                      <PauseCircle className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => setConfirmAction({ type: 'cancel', subscription: r })}
+                      className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50"
+                      title="Hủy"
+                    >
+                      <XCircle className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -261,6 +304,17 @@ export default function SubscriptionsPage() {
         confirmText={confirmAction?.type === 'suspend' ? 'Tạm ngưng' : 'Hủy vé tháng'}
         variant={confirmAction?.type === 'suspend' ? 'primary' : 'danger'}
         loading={suspendMutation.isPending || cancelMutation.isPending}
+      />
+
+      <RejectSubscriptionDialog
+        open={!!rejectTarget}
+        subscription={rejectTarget}
+        onClose={() => setRejectTarget(null)}
+        onConfirm={(reason) => {
+          rejectMutation.mutate({ id: rejectTarget.id, reason })
+          setRejectTarget(null)
+        }}
+        loading={rejectMutation.isPending}
       />
     </div>
   )

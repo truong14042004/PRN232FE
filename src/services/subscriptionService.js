@@ -12,6 +12,16 @@ export const subscriptionService = {
     })
     return unwrap(res)
   },
+  my: async ({ status, page = 1, pageSize = 20 } = {}) => {
+    const res = await api.get('/api/v1/subscriptions/my', {
+      params: {
+        status: status ?? undefined,
+        page,
+        pageSize,
+      },
+    })
+    return unwrap(res)
+  },
   get: async (id) => {
     const res = await api.get(`/api/v1/subscriptions/${id}`)
     return unwrap(res)
@@ -22,6 +32,10 @@ export const subscriptionService = {
   },
   create: async (payload) => {
     const res = await api.post('/api/v1/subscriptions', payload)
+    return unwrap(res)
+  },
+  request: async (payload) => {
+    const res = await api.post('/api/v1/subscriptions/request', payload)
     return unwrap(res)
   },
   update: async (id, payload) => {
@@ -38,6 +52,14 @@ export const subscriptionService = {
   },
   cancel: async (id) => {
     const res = await api.post(`/api/v1/subscriptions/${id}/cancel`)
+    return unwrap(res)
+  },
+  approve: async (id) => {
+    const res = await api.post(`/api/v1/subscriptions/${id}/approve`)
+    return unwrap(res)
+  },
+  reject: async (id, reason) => {
+    const res = await api.post(`/api/v1/subscriptions/${id}/reject`, { reason })
     return unwrap(res)
   },
 }

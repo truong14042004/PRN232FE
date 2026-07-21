@@ -66,6 +66,16 @@ export default function VehicleTypesPage() {
       render: (r) => <span className="text-slate-600">{r.description || '—'}</span>,
     },
     {
+      key: 'category',
+      header: 'Phân loại',
+      render: (r) =>
+        r.category === 2 ? (
+          <Badge color="bg-blue-100 text-blue-700 ring-blue-600/20">Ô tô</Badge>
+        ) : (
+          <Badge color="bg-violet-100 text-violet-700 ring-violet-600/20">Xe máy</Badge>
+        ),
+    },
+    {
       key: 'isActive',
       header: 'Trạng thái',
       render: (r) =>

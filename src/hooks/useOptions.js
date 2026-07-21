@@ -42,11 +42,11 @@ export function useFloorOptions(buildingId) {
   return { items: data?.items || [], options, isLoading }
 }
 
-// Khu vực theo tòa nhà (+ tầng nếu có).
-export function useZoneOptions(buildingId, floorId, enabled = true) {
+// Khu vực theo tòa nhà (+ tầng, + loại xe nếu có).
+export function useZoneOptions(buildingId, floorId, enabled = true, vehicleTypeId) {
   const { data, isLoading } = useQuery({
-    queryKey: ['zones', 'options', buildingId, floorId],
-    queryFn: () => zoneService.list({ buildingId, floorId, isActive: true, pageSize: 200 }),
+    queryKey: ['zones', 'options', buildingId, floorId, vehicleTypeId],
+    queryFn: () => zoneService.list({ buildingId, floorId, vehicleTypeId, isActive: true, pageSize: 200 }),
     enabled: enabled && !!buildingId,
     staleTime: 5 * 60 * 1000,
   })

@@ -1,11 +1,12 @@
 import { api, unwrap } from '../lib/apiClient'
 
 export const zoneService = {
-  list: async ({ buildingId, floorId, isActive, page = 1, pageSize = 20 } = {}) => {
+  list: async ({ buildingId, floorId, vehicleTypeId, isActive, page = 1, pageSize = 20 } = {}) => {
     const res = await api.get('/api/v1/zones', {
       params: {
         buildingId: buildingId || undefined,
         floorId: floorId || undefined,
+        vehicleTypeId: vehicleTypeId || undefined,
         isActive: isActive ?? undefined,
         page,
         pageSize,

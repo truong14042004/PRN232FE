@@ -45,6 +45,7 @@ const NAV_GROUPS = [
     title: 'Cá nhân',
     items: [
       { to: '/my-sessions', label: 'Lượt gửi của tôi', icon: Ticket, roles: DRIVER },
+      { to: '/my-subscriptions', label: 'Vé tháng của tôi', icon: CalendarClock, roles: DRIVER },
       { to: '/my-payments', label: 'Thanh toán của tôi', icon: Wallet, roles: DRIVER },
       { to: '/my-vehicles', label: 'Xe của tôi', icon: Car, roles: DRIVER },
       { to: '/lot-info', label: 'Thông tin bãi', icon: Info, roles: DRIVER },

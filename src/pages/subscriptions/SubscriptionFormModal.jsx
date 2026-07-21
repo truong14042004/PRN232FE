@@ -5,8 +5,10 @@ import toast from 'react-hot-toast'
 import { subscriptionService } from '../../services/subscriptionService'
 import { getErrorMessage } from '../../lib/apiClient'
 import { toDateInput } from '../../lib/format'
+import { useBuildingOptions, useVehicleTypeOptions } from '../../hooks/useOptions'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
+import Select from '../../components/ui/Select'
 import Textarea from '../../components/ui/Textarea'
 import Button from '../../components/ui/Button'
 
@@ -32,6 +34,8 @@ const emptyValues = () => ({
 
 export default function SubscriptionFormModal({ open, mode = 'create', subscription, onClose, onSaved }) {
   const isEdit = mode === 'edit'
+  const { options: buildingOptions } = useBuildingOptions()
+  const { options: vehicleTypeOptions } = useVehicleTypeOptions()
   const {
     register,
     handleSubmit,
@@ -167,17 +171,23 @@ export default function SubscriptionFormModal({ open, mode = 'create', subscript
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Input
-            label="Mã loại xe"
-            placeholder="vehicleTypeId"
+          <Select
+            label="Loại xe"
+            placeholder="Chọn loại xe"
+            options={vehicleTypeOptions}
+            disabled={isEdit}
+            hint={isEdit ? 'Không thể đổi loại xe sau khi tạo' : undefined}
             error={errors.vehicleTypeId?.message}
-            {...register('vehicleTypeId', { required: 'Vui lòng nhập mã loại xe' })}
+            {...register('vehicleTypeId', { required: 'Vui lòng chọn loại xe' })}
           />
-          <Input
-            label="Mã tòa nhà"
-            placeholder="buildingId"
+          <Select
+            label="Tòa nhà"
+            placeholder="Chọn tòa nhà"
+            options={buildingOptions}
+            disabled={isEdit}
+            hint={isEdit ? 'Không thể đổi tòa nhà sau khi tạo' : undefined}
             error={errors.buildingId?.message}
-            {...register('buildingId', { required: 'Vui lòng nhập mã tòa nhà' })}
+            {...register('buildingId', { required: 'Vui lòng chọn tòa nhà' })}
           />
         </div>
 

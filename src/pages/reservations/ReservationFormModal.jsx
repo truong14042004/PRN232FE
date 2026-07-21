@@ -46,9 +46,10 @@ export default function ReservationFormModal({ open, mode = 'create', reservatio
   } = useForm({ defaultValues: emptyValues() })
 
   const buildingId = watch('buildingId')
+  const vehicleTypeId = watch('vehicleTypeId')
   const { options: buildingOptions } = useBuildingOptions()
   const { options: vehicleTypeOptions } = useVehicleTypeOptions()
-  const { options: zoneOptions } = useZoneOptions(buildingId, undefined, !hideZone)
+  const { options: zoneOptions } = useZoneOptions(buildingId, undefined, !hideZone, vehicleTypeId)
 
   useEffect(() => {
     if (!open) return
@@ -147,6 +148,7 @@ export default function ReservationFormModal({ open, mode = 'create', reservatio
             error={errors.vehicleTypeId?.message}
             {...register('vehicleTypeId', {
               validate: (v) => isEdit || !!v || 'Vui lòng chọn loại xe',
+              onChange: () => setValue('zoneId', ''),
             })}
           />
         </div>

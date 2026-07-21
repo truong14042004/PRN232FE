@@ -6,10 +6,11 @@ import { vehicleTypeService } from '../../services/vehicleTypeService'
 import { getErrorMessage } from '../../lib/apiClient'
 import Modal from '../../components/ui/Modal'
 import Input from '../../components/ui/Input'
+import Select from '../../components/ui/Select'
 import Textarea from '../../components/ui/Textarea'
 import Button from '../../components/ui/Button'
 
-const emptyValues = () => ({ name: '', description: '' })
+const emptyValues = () => ({ name: '', description: '', category: '1' })
 
 export default function VehicleTypeFormModal({ open, mode = 'create', vehicleType, onClose, onSaved }) {
   const isEdit = mode === 'edit'
@@ -17,6 +18,8 @@ export default function VehicleTypeFormModal({ open, mode = 'create', vehicleTyp
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({ defaultValues: emptyValues() })
 
@@ -26,6 +29,7 @@ export default function VehicleTypeFormModal({ open, mode = 'create', vehicleTyp
       reset({
         name: vehicleType.name || '',
         description: vehicleType.description || '',
+        category: String(vehicleType.category ?? 1),
       })
     } else {
       reset(emptyValues())
@@ -47,6 +51,7 @@ export default function VehicleTypeFormModal({ open, mode = 'create', vehicleTyp
     const payload = {
       name: values.name.trim(),
       description: values.description?.trim() || undefined,
+      category: Number(values.category),
     }
     if (isEdit) payload.isActive = vehicleType.isActive ?? true
     mutation.mutate(payload)
@@ -75,6 +80,15 @@ export default function VehicleTypeFormModal({ open, mode = 'create', vehicleTyp
           placeholder="Xe máy, Ô tô con..."
           error={errors.name?.message}
           {...register('name', { required: 'Vui lòng nhập tên loại xe' })}
+        />
+        <Select
+          label="Phân loại"
+          value={watch('category')}
+          onChange={(e) => setValue('category', e.target.value)}
+          options={[
+            { value: '1', label: 'Xe máy' },
+            { value: '2', label: 'Ô tô' },
+          ]}
         />
         <Textarea
           label="Mô tả (tùy chọn)"

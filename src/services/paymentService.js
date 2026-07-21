@@ -21,6 +21,10 @@ export const paymentService = {
     const res = await api.get(`/api/v1/payments/by-session/${sessionId}`)
     return unwrap(res)
   },
+  bySubscription: async (subscriptionId) => {
+    const res = await api.get(`/api/v1/payments/by-subscription/${subscriptionId}`)
+    return unwrap(res)
+  },
   create: async (payload) => {
     const res = await api.post('/api/v1/payments', payload)
     return unwrap(res)

@@ -61,7 +61,7 @@ export default function CheckInModal({ open, onClose, onSaved }) {
 
   const { options: buildingOptions } = useBuildingOptions()
   const { options: vehicleTypeOptions } = useVehicleTypeOptions()
-  const { options: zoneOptions } = useZoneOptions(buildingId)
+  const { options: zoneOptions } = useZoneOptions(buildingId, undefined, true, vehicleTypeId)
 
   // Danh sách cổng vào theo tòa nhà (Entry=1 hoặc Both=3).
   const { data: gatesData } = useQuery({
@@ -114,7 +114,7 @@ export default function CheckInModal({ open, onClose, onSaved }) {
       plateNumber: values.plateNumber.trim(),
       vehicleTypeId: values.vehicleTypeId,
       buildingId: values.buildingId,
-      zoneId: values.zoneId,
+      zoneId: values.zoneId || undefined,
       parkingSlotId: autoSlot ? undefined : values.parkingSlotId || undefined,
       entryGate: values.entryGate || undefined,
       isMonthly: !!values.isMonthly,
@@ -155,7 +155,10 @@ export default function CheckInModal({ open, onClose, onSaved }) {
             placeholder="Chọn loại xe"
             options={vehicleTypeOptions}
             error={errors.vehicleTypeId?.message}
-            {...register('vehicleTypeId', { required: 'Vui lòng chọn loại xe' })}
+            {...register('vehicleTypeId', {
+              required: 'Vui lòng chọn loại xe',
+              onChange: () => setValue('zoneId', ''),
+            })}
           />
         </div>
 
@@ -165,7 +168,10 @@ export default function CheckInModal({ open, onClose, onSaved }) {
             placeholder="Chọn tòa nhà"
             options={buildingOptions}
             error={errors.buildingId?.message}
-            {...register('buildingId', { required: 'Vui lòng chọn tòa nhà' })}
+            {...register('buildingId', {
+              required: 'Vui lòng chọn tòa nhà',
+              onChange: () => setValue('zoneId', ''),
+            })}
           />
           <Select
             label="Khu vực"
@@ -173,7 +179,9 @@ export default function CheckInModal({ open, onClose, onSaved }) {
             options={zoneOptions}
             disabled={!buildingId}
             error={errors.zoneId?.message}
-            {...register('zoneId', { required: 'Vui lòng chọn khu vực' })}
+            {...register('zoneId', {
+              validate: (v) => zoneOptions.length === 0 || !!v || 'Vui lòng chọn khu vực',
+            })}
           />
         </div>
 

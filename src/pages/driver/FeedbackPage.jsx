@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { MessageSquare, Star, Send } from 'lucide-react'
+import { MessageSquare, Send } from 'lucide-react'
 import { feedbackService } from '../../services/feedbackService'
 import { parkingSessionService } from '../../services/parkingSessionService'
 import { useBuildingOptions } from '../../hooks/useOptions'
@@ -19,7 +19,6 @@ import { formatDateTime } from '../../lib/format'
 
 export default function FeedbackPage() {
   const qc = useQueryClient()
-  const [rating, setRating] = useState(5)
   const [type, setType] = useState(5)
   const [content, setContent] = useState('')
   const [buildingId, setBuildingId] = useState('')
@@ -46,7 +45,6 @@ export default function FeedbackPage() {
   const createMutation = useMutation({
     mutationFn: () =>
       feedbackService.create({
-        rating,
         type: Number(type),
         content: content.trim(),
         buildingId: buildingId || selectedSession?.buildingId || undefined,
@@ -56,7 +54,6 @@ export default function FeedbackPage() {
     onSuccess: () => {
       toast.success('Đã gửi phản hồi')
       setContent('')
-      setRating(5)
       setType(5)
       setSessionId('')
       qc.invalidateQueries({ queryKey: ['feedback', 'my'] })
@@ -82,28 +79,6 @@ export default function FeedbackPage() {
           </CardHeader>
           <CardBody>
             <div className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-700">Đánh giá</label>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <button
-                      key={n}
-                      type="button"
-                      onClick={() => setRating(n)}
-                      className="p-0.5"
-                      aria-label={`${n} sao`}
-                    >
-                      <Star
-                        className={cn(
-                          'h-6 w-6 transition-colors',
-                          n <= rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300',
-                        )}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <Select
                 label="Loại phản hồi"
                 options={FEEDBACK_TYPE_OPTIONS}
@@ -161,14 +136,6 @@ export default function FeedbackPage() {
                 {items.map((f) => (
                   <li key={f.id} className="rounded-xl border border-slate-200 p-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <Star
-                            key={n}
-                            className={cn('h-3.5 w-3.5', n <= f.rating ? 'fill-amber-400 text-amber-400' : 'text-slate-300')}
-                          />
-                        ))}
-                      </div>
                       <Badge color={FEEDBACK_STATUS[f.status]?.color}>
                         {FEEDBACK_STATUS[f.status]?.label || f.status}
                       </Badge>

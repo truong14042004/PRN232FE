@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { MessageSquare, Star, Wrench } from 'lucide-react'
+import { MessageSquare, Wrench } from 'lucide-react'
 import { feedbackService } from '../../services/feedbackService'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Card, CardBody } from '../../components/ui/Card'
@@ -8,7 +8,6 @@ import { Table } from '../../components/ui/Table'
 import Select from '../../components/ui/Select'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
-import { cn } from '../../lib/cn'
 import { FEEDBACK_STATUS, FEEDBACK_TYPE, FEEDBACK_TYPE_OPTIONS } from '../../lib/enums'
 import { formatDateTime } from '../../lib/format'
 import ResolveFeedbackModal from './ResolveFeedbackModal'
@@ -20,16 +19,6 @@ const STATUS_OPTIONS = [
   { value: 3, label: 'Đã xử lý' },
   { value: 4, label: 'Đã đóng' },
 ]
-
-function Stars({ value }) {
-  return (
-    <span className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <Star key={n} className={cn('h-3.5 w-3.5', n <= value ? 'fill-amber-400 text-amber-400' : 'text-slate-300')} />
-      ))}
-    </span>
-  )
-}
 
 export default function FeedbackManagementPage() {
   const qc = useQueryClient()
@@ -43,7 +32,6 @@ export default function FeedbackManagementPage() {
   })
 
   const columns = [
-    { key: 'rating', header: 'Đánh giá', render: (r) => <Stars value={r.rating} /> },
     {
       key: 'type',
       header: 'Loại',

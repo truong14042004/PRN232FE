@@ -28,6 +28,11 @@ export default function ParkingMapGrid({ map, highlightSlotId, onSlotClick }) {
           const meta = SLOT_STATUS[slot.status] || {}
           const occupied = slot.status === 2
           const isHighlight = highlightSlotId === slot.slotId
+          // Chỉ đặt vị trí tường minh khi có dữ liệu hợp lệ; thiếu thì để grid tự sắp,
+          // tránh giá trị "undefined / span 1" làm các ô đè lên nhau.
+          const gridStyle = {}
+          if (slot.column != null) gridStyle.gridColumn = `${slot.column} / span ${slot.colSpan || 1}`
+          if (slot.row != null) gridStyle.gridRow = `${slot.row} / span ${slot.rowSpan || 1}`
           return (
             <motion.button
               key={slot.slotId}
@@ -39,25 +44,22 @@ export default function ParkingMapGrid({ map, highlightSlotId, onSlotClick }) {
                   ? { scale: [1, 1.08, 1], transition: { duration: 0.6 } }
                   : { scale: 1 }
               }
-              style={{
-                gridColumn: `${slot.column} / span ${slot.colSpan || 1}`,
-                gridRow: `${slot.row} / span ${slot.rowSpan || 1}`,
-              }}
+              style={gridStyle}
               className={cn(
-                'group relative flex flex-col items-center justify-center gap-1 rounded-xl border-2 p-2 text-center transition-colors',
+                'group relative flex flex-col items-center justify-center gap-1 overflow-hidden rounded-xl border-2 p-2 text-center transition-colors',
                 meta.map || 'bg-slate-50 border-slate-200',
                 isHighlight && 'ring-4 ring-brand-400/40',
               )}
               title={`${slot.code}${slot.label ? ` · ${slot.label}` : ''} — ${meta.label || ''}`}
             >
-              <span className="text-xs font-bold leading-none">{slot.code}</span>
+              <span className="w-full truncate text-xs font-bold leading-none">{slot.code}</span>
               {occupied && slot.vehicle ? (
-                <span className="flex items-center gap-0.5 text-[10px] font-medium leading-tight">
-                  <Car className="h-3 w-3" />
-                  <span className="max-w-[60px] truncate">{slot.vehicle.plateNumber}</span>
+                <span className="flex max-w-full items-center gap-0.5 text-[10px] font-medium leading-tight">
+                  <Car className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{slot.vehicle.plateNumber}</span>
                 </span>
               ) : (
-                <span className="text-[10px] leading-none opacity-70">{meta.label}</span>
+                <span className="w-full truncate text-[10px] leading-none opacity-70">{meta.label}</span>
               )}
               {occupied && slot.vehicle?.isMonthly && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-violet-500" />
