@@ -41,4 +41,8 @@ export const paymentService = {
     const res = await api.post(`/api/v1/payments/${id}/payos-link`)
     return unwrap(res)
   },
+  payosStatus: async (id) => {
+    const res = await api.get(`/api/v1/payments/${id}/payos-status`)
+    return unwrap(res)
+  },
 }

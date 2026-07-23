@@ -26,8 +26,6 @@ const emptyValues = () => ({
   zoneId: '',
   parkingSlotId: '',
   entryGate: '',
-  isMonthly: false,
-  subscriptionId: '',
   checkInNote: '',
 })
 
@@ -46,7 +44,6 @@ export default function CheckInModal({ open, onClose, onSaved }) {
   const buildingId = watch('buildingId')
   const zoneId = watch('zoneId')
   const vehicleTypeId = watch('vehicleTypeId')
-  const isMonthly = watch('isMonthly')
 
   // Gợi ý slot tối ưu bằng AI/thuật toán cho zone + loại xe đã chọn.
   const [suggestions, setSuggestions] = useState([])
@@ -117,8 +114,6 @@ export default function CheckInModal({ open, onClose, onSaved }) {
       zoneId: values.zoneId || undefined,
       parkingSlotId: autoSlot ? undefined : values.parkingSlotId || undefined,
       entryGate: values.entryGate || undefined,
-      isMonthly: !!values.isMonthly,
-      subscriptionId: values.isMonthly ? values.subscriptionId?.trim() || undefined : undefined,
       checkInNote: values.checkInNote?.trim() || undefined,
     })
   }
@@ -269,33 +264,13 @@ export default function CheckInModal({ open, onClose, onSaved }) {
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Select
-            label="Cổng vào (tùy chọn)"
-            placeholder={buildingId ? 'Chọn cổng' : 'Chọn tòa nhà trước'}
-            options={gateOptions}
-            disabled={!buildingId}
-            {...register('entryGate')}
-          />
-          <div className="flex items-end">
-            <label className="flex w-full cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50/60 px-4 py-2.5">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30"
-                {...register('isMonthly')}
-              />
-              <span className="text-sm font-medium text-slate-700">Xe vé tháng</span>
-            </label>
-          </div>
-        </div>
-
-        {isMonthly && (
-          <Input
-            label="Mã vé tháng (subscriptionId)"
-            placeholder="subscriptionId"
-            {...register('subscriptionId')}
-          />
-        )}
+        <Select
+          label="Cổng vào (tùy chọn)"
+          placeholder={buildingId ? 'Chọn cổng' : 'Chọn tòa nhà trước'}
+          options={gateOptions}
+          disabled={!buildingId}
+          {...register('entryGate')}
+        />
 
         <Textarea label="Ghi chú (tùy chọn)" placeholder="Ghi chú thêm..." {...register('checkInNote')} />
       </form>

@@ -43,6 +43,10 @@ export const parkingSessionService = {
     const res = await api.post(`/api/v1/parking-sessions/${id}/check-out`, payload)
     return unwrap(res)
   },
+  finalizeCheckOut: async (id) => {
+    const res = await api.post(`/api/v1/parking-sessions/${id}/finalize-check-out`)
+    return unwrap(res)
+  },
   changeSlot: async (id, newParkingSlotId) => {
     const res = await api.post(`/api/v1/parking-sessions/${id}/change-slot`, { newParkingSlotId })
     return unwrap(res)

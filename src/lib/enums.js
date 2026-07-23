@@ -68,13 +68,14 @@ export const PRICING_TYPE_OPTIONS = [
   { value: 4, label: 'Theo tháng' },
 ]
 
-// SubscriptionStatus: Active=1, Expired=2, Suspended=3, Cancelled=4, PendingApproval=5
+// SubscriptionStatus: Active=1, Expired=2, Suspended=3, Cancelled=4, PendingApproval=5, PendingPayment=6
 export const SUBSCRIPTION_STATUS = {
   1: { label: 'Đang hiệu lực', color: 'bg-emerald-100 text-emerald-700 ring-emerald-600/20' },
   2: { label: 'Hết hạn', color: 'bg-slate-100 text-slate-700 ring-slate-600/20' },
   3: { label: 'Tạm ngưng', color: 'bg-amber-100 text-amber-700 ring-amber-600/20' },
   4: { label: 'Đã hủy', color: 'bg-red-100 text-red-700 ring-red-600/20' },
   5: { label: 'Chờ duyệt', color: 'bg-yellow-100 text-yellow-700 ring-yellow-600/20' },
+  6: { label: 'Chờ thanh toán', color: 'bg-sky-100 text-sky-700 ring-sky-600/20' },
 }
 
 export const SUBSCRIPTION_STATUS_OPTIONS = [
@@ -83,6 +84,7 @@ export const SUBSCRIPTION_STATUS_OPTIONS = [
   { value: 3, label: 'Tạm ngưng' },
   { value: 4, label: 'Đã hủy' },
   { value: 5, label: 'Chờ duyệt' },
+  { value: 6, label: 'Chờ thanh toán' },
 ]
 
 // ===== Parking service enums =====
