@@ -14,14 +14,15 @@ export default function CreatePaymentModal({ open, onClose, onCreated, methodOpt
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm({ defaultValues: { method: 1 } })
+  } = useForm({ defaultValues: { method: 1, parkingSessionId: '', subscriptionId: '' } })
 
   const mutation = useMutation({
     mutationFn: (payload) => paymentService.create(payload),
     onSuccess: () => {
       toast.success('Đã tạo giao dịch thanh toán')
-      reset({ method: 1 })
+      reset({ method: 1, parkingSessionId: '', subscriptionId: '' })
       onCreated?.()
       onClose?.()
     },
@@ -29,8 +30,11 @@ export default function CreatePaymentModal({ open, onClose, onCreated, methodOpt
   })
 
   const onSubmit = (values) => {
+    const hasSession = !!values.parkingSessionId?.trim()
+    const hasSubscription = !!values.subscriptionId?.trim()
     mutation.mutate({
-      parkingSessionId: values.parkingSessionId.trim(),
+      parkingSessionId: hasSession ? values.parkingSessionId.trim() : undefined,
+      subscriptionId: hasSubscription ? values.subscriptionId.trim() : undefined,
       plateNumber: values.plateNumber.trim(),
       vehicleId: values.vehicleId?.trim() || undefined,
       shiftId: values.shiftId?.trim() || undefined,
@@ -41,7 +45,7 @@ export default function CreatePaymentModal({ open, onClose, onCreated, methodOpt
   }
 
   const handleClose = () => {
-    reset({ method: 1 })
+    reset({ method: 1, parkingSessionId: '', subscriptionId: '' })
     onClose?.()
   }
 
@@ -66,8 +70,22 @@ export default function CreatePaymentModal({ open, onClose, onCreated, methodOpt
         <Input
           label="Mã phiên gửi xe"
           placeholder="parkingSessionId"
+          hint="Nhập mã phiên gửi xe HOẶC mã vé tháng bên dưới"
           error={errors.parkingSessionId?.message}
-          {...register('parkingSessionId', { required: 'Vui lòng nhập mã phiên gửi xe' })}
+          {...register('parkingSessionId', {
+            validate: (v) =>
+              !!v?.trim() || !!watch('subscriptionId')?.trim() ||
+              'Vui lòng nhập mã phiên gửi xe hoặc mã vé tháng',
+          })}
+        />
+        <Input
+          label="Mã vé tháng (nếu thanh toán vé tháng)"
+          placeholder="subscriptionId"
+          {...register('subscriptionId', {
+            validate: (v) =>
+              !!v?.trim() || !!watch('parkingSessionId')?.trim() ||
+              'Vui lòng nhập mã phiên gửi xe hoặc mã vé tháng',
+          })}
         />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input

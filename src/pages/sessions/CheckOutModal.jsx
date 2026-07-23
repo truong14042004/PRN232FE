@@ -174,6 +174,7 @@ export default function CheckOutModal({ open, session, onClose, onSaved, default
               placeholder="0"
               value={totalFee}
               readOnly
+              hint="Phí thực tế do hệ thống tính khi xác nhận cho xe ra."
               containerClassName="flex-1"
             />
             <Button

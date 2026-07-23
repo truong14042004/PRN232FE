@@ -15,8 +15,6 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { parkingSessionService } from '../../services/parkingSessionService'
-import { useMutation } from '@tanstack/react-query'
-import { getErrorMessage } from '../../lib/apiClient'
 import { SESSION_STATUS, SESSION_STATUS_OPTIONS } from '../../lib/enums'
 import { useBuildingOptions } from '../../hooks/useOptions'
 import { PageHeader } from '../../components/ui/PageHeader'
@@ -33,6 +31,7 @@ import CheckOutModal from './CheckOutModal'
 import ChangeSlotModal from './ChangeSlotModal'
 import SessionDetailModal from './SessionDetailModal'
 import UpdateInfoModal from './UpdateInfoModal'
+import MarkExceptionModal from './MarkExceptionModal'
 
 // Phiên đang gửi quá lâu (ngưỡng giờ) được coi là quá hạn → cảnh báo.
 const OVERTIME_HOURS = 24
@@ -60,6 +59,7 @@ export default function ParkingSessionsPage() {
   const [checkOutLostTicket, setCheckOutLostTicket] = useState(false)
   const [changeSlotTarget, setChangeSlotTarget] = useState(null)
   const [updateInfoTarget, setUpdateInfoTarget] = useState(null)
+  const [exceptionTarget, setExceptionTarget] = useState(null)
   const [detailId, setDetailId] = useState(null)
 
   // Hành động cần tự mở sau khi tải được phiên (đến từ trang phản hồi: ?action=checkout|changeslot).
@@ -80,20 +80,6 @@ export default function ParkingSessionsPage() {
     setSearchParams(searchParams, { replace: true })
   }, [searchParams, setSearchParams])
 
-  const markExceptionMutation = useMutation({
-    mutationFn: ({ id, note }) => parkingSessionService.markException(id, note),
-    onSuccess: () => {
-      toast.success('Đã đánh dấu ngoại lệ')
-      queryClient.invalidateQueries({ queryKey: ['parking-sessions'] })
-    },
-    onError: (err) => toast.error(getErrorMessage(err, 'Đánh dấu ngoại lệ thất bại')),
-  })
-
-  const handleMarkException = (session) => {
-    const note = window.prompt('Lý do ngoại lệ (vd: xe quá hạn gửi, bất thường):', 'Xe quá hạn gửi')
-    if (note === null) return
-    markExceptionMutation.mutate({ id: session.id, note })
-  }
 
   const filters = {
     buildingId: buildingId || undefined,
@@ -236,7 +222,7 @@ export default function ParkingSessionsPage() {
                   <Pencil className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={() => handleMarkException(r)}
+                  onClick={() => setExceptionTarget(r)}
                   className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600"
                   title="Đánh dấu ngoại lệ"
                 >
@@ -392,6 +378,13 @@ export default function ParkingSessionsPage() {
         open={!!updateInfoTarget}
         session={updateInfoTarget}
         onClose={() => setUpdateInfoTarget(null)}
+        onSaved={invalidate}
+      />
+
+      <MarkExceptionModal
+        open={!!exceptionTarget}
+        session={exceptionTarget}
+        onClose={() => setExceptionTarget(null)}
         onSaved={invalidate}
       />
 

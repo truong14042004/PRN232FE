@@ -135,8 +135,12 @@ export default function FeePolicyFormModal({ open, mode = 'create', policy, onCl
           <Input
             label="Mã loại xe"
             placeholder="vehicleTypeId"
+            disabled={isEdit}
+            hint={isEdit ? 'Không thể đổi loại xe sau khi tạo' : undefined}
             error={errors.vehicleTypeId?.message}
-            {...register('vehicleTypeId', { required: 'Vui lòng nhập mã loại xe' })}
+            {...register('vehicleTypeId', {
+              validate: (v) => isEdit || !!v.trim() || 'Vui lòng nhập mã loại xe',
+            })}
           />
           <Input
             label="Mã tòa nhà"

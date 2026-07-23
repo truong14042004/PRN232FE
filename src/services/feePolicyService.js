@@ -36,7 +36,7 @@ export const feePolicyService = {
   },
   remove: async (id) => {
     const res = await api.delete(`/api/v1/fee-policies/${id}`)
-    return res.data
+    return unwrap(res)
   },
   calculate: async (payload) => {
     const res = await api.post('/api/v1/fee-policies/calculate', payload)
